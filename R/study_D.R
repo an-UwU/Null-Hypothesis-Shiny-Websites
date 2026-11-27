@@ -149,8 +149,7 @@ studyServer <- function(id, data, centre) {
           spread <- sprintf("Usage also varied more in the Stay group (SD = <strong>%s</strong>) than in the Switch group (SD = <strong>%s</strong>), suggesting that some higher-use respondents raised the Stay group's average.",
             fmt(stats::sd(stay)), fmt(stats::sd(switch)))
         }
-        comparison <- shiny::p(shiny::HTML(paste(lead, spread,
-          "These descriptive differences alone do not establish a statistically significant relationship between usage hours and switching intention.")))
+        comparison <- shiny::p(shiny::HTML(paste(lead, spread)))
       }
       shiny::tagList(overall, comparison)
     })
