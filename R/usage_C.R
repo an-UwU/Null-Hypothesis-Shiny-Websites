@@ -2,12 +2,12 @@ usageUI <- function(id, survey) {
   ns <- shiny::NS(id)
   max_hours <- max(survey$weekly_ai_hours, na.rm = TRUE)
   shiny::tagList(
-    section_header("03 / TIME & FUTURE CHOICES", "Weekly AI usage hours",
+    section_header("03 / TIME & FUTURE CHOICES", "Weekly AI Usage Hours",
       "Explore how reported hours are distributed overall or among students who plan to stay or switch."),
     shiny::div(class = "panel",
       shiny::div(class = "control-grid figure-controls",
         shiny::radioButtons(ns("scale"), "Y-axis scale",
-          c("Frequency" = "count", "Density" = "density"), inline = TRUE)),
+          c("Number of students" = "count", "Density" = "density"), inline = TRUE)),
       shiny::div(class = "chart-topline", shiny::h3(shiny::textOutput(ns("title"), inline = TRUE)),
         shiny::uiOutput(ns("sample"))),
       shiny::plotOutput(ns("chart"), height = "410px"),
@@ -24,7 +24,7 @@ usageUI <- function(id, survey) {
           shiny::conditionalPanel("input.custom_y && input.scale === 'density'", ns = ns,
             shiny::sliderInput(ns("ymax_density"), "Y-axis maximum",
               min = .01, max = 2, value = 1, step = .01, ticks = FALSE)))),
-      shiny::div(class = "interpretation", shiny::span(class = "eyebrow", "READING THIS VIEW"),
+      shiny::div(class = "interpretation", shiny::span(class = "results-label", "Results"),
         shiny::textOutput(ns("reading")))
     )
   )
@@ -64,13 +64,13 @@ usageServer <- function(id, data, palette = function() FIGURE_PALETTES$Navy,
           fill = palette()[["histogram"]], colour = "white", linewidth = .35) +
         ggplot2::coord_cartesian(xlim = input$xlim,
           ylim = y_limit, expand = c(top = is.null(y_limit), bottom = is.null(y_limit))) +
-        ggplot2::labs(x = "Weekly AI usage (hours)", y = if (density) "Density" else "Frequency") +
+        ggplot2::labs(x = "Weekly AI usage (hours)", y = if (density) "Density" else "Number of students") +
         chart_theme() + ggplot2::theme(panel.grid.major.y = ggplot2::element_line(colour = "#E5EDF6"))
     }, res = 110, bg = "white")
     output$reading <- shiny::renderText({
       d <- plot_data()
       if (!nrow(d)) return("No eligible responses match these filters.")
-      sprintf("Among the %d respondents shown, average weekly AI use was %.2f hours and the median was %.2f hours. The axis limits do not change these statistics.",
+      sprintf("Among the %d respondents shown, average weekly AI use was %.2f hours and the median was %.2f hours.",
         nrow(d), mean(d$weekly_ai_hours), median(d$weekly_ai_hours))
     })
   })

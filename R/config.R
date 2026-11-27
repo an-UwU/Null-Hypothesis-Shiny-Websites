@@ -1,5 +1,5 @@
 PROJECT <- list(
-  title = "AI, in the classroom.",
+  title = "STA304 Student AI Use Survey",
   subtitle = "Generative AI preferences and habits among STA304H5 students",
   team = "Null Hypothesis",
   term = "Fall 2026",

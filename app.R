@@ -13,9 +13,9 @@ centre <- mean(full_users$weekly_ai_hours)
 
 ui <- fluidPage(
   theme = bs_theme(version = 5, bg = "#FFFFFF", fg = "#172840", primary = "#17345A",
-    base_font = "Arial", heading_font = "Georgia", border_radius = "12px"),
+    base_font = "Arial", heading_font = "Arial", border_radius = "12px"),
   tags$head(
-    tags$title(paste(PROJECT$title, "STA304 Research")),
+    tags$title(PROJECT$title),
     tags$meta(name = "viewport", content = "width=device-width, initial-scale=1"),
     tags$link(rel = "stylesheet", type = "text/css", href = "styles.css"),
     tags$link(rel = "icon", type = "image/svg+xml", href = "favicon.svg")),
@@ -24,19 +24,19 @@ ui <- fluidPage(
       filtersUI("filters", survey)),
     tags$main(class = "main-content",
       tabsetPanel(id = "main_nav", type = "tabs", selected = "overview",
-        tabPanel("Overview", value = "overview",
-          section_header("01 / OVERVIEW", "How do students choose their AI?",
+        tabPanel("Survey Overview", value = "overview",
+          section_header("01 / OVERVIEW", "AI Use Among STA304H5 Students",
             "Explore which AI tools STA304H5 respondents use most for coursework."),
           div(class = "panel",
-            div(class = "chart-topline", h3("The tools students reach for")),
+            div(class = "chart-topline", h3("Primary AI Tools")),
             plotOutput("overview_chart", height = "420px"),
-            div(class = "interpretation", span(class = "eyebrow", "READING THIS VIEW"),
+            div(class = "interpretation", span(class = "results-label", "Results"),
               textOutput("overview_reading")))),
-        tabPanel("Tools & tasks", value = "tools", toolsUI("tools", survey)),
-        tabPanel("Time & future choices", value = "usage", usageUI("usage", survey)),
+        tabPanel("AI Tools and Academic Tasks", value = "tools", toolsUI("tools", survey)),
+        tabPanel("Weekly AI Use", value = "usage", usageUI("usage", survey)),
         tabPanel("Findings", value = "study", studyUI("study")),
-        tabPanel("Data explorer", value = "data",
-          section_header("05 / DATA EXPLORER", "Survey dataset",
+        tabPanel("Survey Data", value = "data",
+          section_header("05 / DATA EXPLORER", "Survey Responses",
             "Browse the survey responses with their original field names. Scroll horizontally to see all columns."),
           div(class = "panel", uiOutput("data_scope"), DTOutput("responses")))
       ))
@@ -57,7 +57,7 @@ server <- function(input, output, session) {
     s <- overview_summary()
     validate(need(nrow(s) > 0, "No responses in this view. Select a primary AI tool or adjust the other filters."))
     make_category_plot(s, axis_max = 100, fill = figure_palette()[["ChatGPT"]]) +
-      labs(x = "Share of respondents in this view (%)")
+      labs(x = "Share of respondents (%)")
   }, res = 110, bg = "white")
   output$overview_reading <- renderText({
     s <- overview_summary()
@@ -72,7 +72,7 @@ server <- function(input, output, session) {
         paste(leaders, collapse = ", "), s$n[1], s$denominator[1], share)
     }
   })
-  output$data_scope <- renderUI(div(class = "chart-topline", h3("Survey responses"),
+  output$data_scope <- renderUI(div(class = "chart-topline", h3("Survey Responses"),
     span(class = "sample-badge", paste(nrow(filtered_data()), "responses in this view"))))
   output$responses <- renderDT({
     shown <- filtered_data()[, response_fields, drop = FALSE]

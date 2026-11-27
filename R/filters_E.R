@@ -29,7 +29,7 @@ filtersUI <- function(id, data) {
     shiny::sliderInput(ns("hours"), "Weekly AI use (hours)", min = 0,
       max = max_hours, value = c(0, max_hours), step = .5),
     shiny::checkboxInput(ns("keep_skipped"), "Include skipped usage questions", TRUE),
-    shiny::selectInput(ns("figure_palette"), "Chart palette",
+    shiny::selectInput(ns("figure_palette"), "Chart palette (all three charts)",
       choices = names(FIGURE_PALETTES), selected = DEFAULT_FIGURE_PALETTE),
     shiny::actionButton(ns("reset"), "Reset all filters", class = "reset-button")
   )

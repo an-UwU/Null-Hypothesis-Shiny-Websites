@@ -66,12 +66,12 @@ wrap_label <- function(x, width = 30) {
 }
 
 chart_theme <- function() {
-  ggplot2::theme_minimal(base_size = 13, base_family = "sans") +
+  ggplot2::theme_minimal(base_size = 13, base_family = "Arial") +
     ggplot2::theme(
+      axis.text = ggplot2::element_text(colour = "#485B73"),
       panel.grid.major.y = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank(),
       panel.grid.major.x = ggplot2::element_line(colour = "#E5EDF6"),
-      axis.text = ggplot2::element_text(colour = "#485B73"),
       plot.title = ggplot2::element_text(face = "bold", colour = "#172840", size = 15),
       plot.subtitle = ggplot2::element_text(colour = "#53667D", margin = ggplot2::margin(b = 18)),
       legend.title = ggplot2::element_blank(), legend.position = "bottom",
@@ -80,11 +80,8 @@ chart_theme <- function() {
 }
 
 section_header <- function(kicker, title, description = NULL) {
-  if (identical(kicker, "04 / THE STUDY"))
-    return(shiny::div(class = "section-heading", shiny::h1(title)))
   shiny::div(class = "section-heading",
-    shiny::div(class = "eyebrow", kicker), shiny::h1(title),
-    if (!is.null(description)) shiny::p(description))
+    shiny::h1(title))
 }
 
 figure_title <- function(title, tool) {
