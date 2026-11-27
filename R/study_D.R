@@ -8,7 +8,7 @@ studyUI <- function(id) {
         shiny::p("It includes 112 voluntary responses, of which 110 are from AI users. Participants were recruited through Piazza posts and in-person invitations, so the findings describe a self-selected sample and may not represent all STA304H5 students.")),
       shiny::div(class = "panel", shiny::h3("Survey Analysis"),
         shiny::p("We used descriptive statistics to summarize AI tool preferences, academic purposes, weekly usage hours, and switching intentions."),
-        shiny::p("A chi-square test examined the association between primary AI tool and academic purpose, while quadratic logistic regression assessed the relationship between weekly usage hours and the intention to switch tools."))),
+        shiny::p("A chi-square test examined the association between primary AI tool and academic purpose, while quadratic logistic regression assessed the relationship between weekly usage hours and the intention to switch tools. The chi-square test results are presented below in the Statistical Findings section."))),
     shiny::div(class = "panel", shiny::h3("Summary statistics"),
       shiny::p("Weekly AI use for coursework (hours), overall and by switching intention, in the current selection."),
       shiny::div(class = "study-table", shiny::tableOutput(ns("hours_table"))),
