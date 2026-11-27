@@ -164,3 +164,6 @@ h1,h2,h3,h4,h5,h6,.test-value{font-family:var(--body-font)}
 .panel>.shiny-plot-output.shiny-output-error-validation~.interpretation,.tool-chart-scroll:has(>.shiny-output-error-validation)~.interpretation{display:none}
   .global-sidebar>.overview-tool-filter{grid-column:1/-1;margin-bottom:5px}
 @media(max-width:800px){.global-sidebar>.overview-tool-filter{grid-column:1/-1;margin-bottom:5px}}
+
+/* Match overview selection text to the other sidebar dropdowns. */
+.site-shell .global-sidebar .overview-tool-filter .shiny-text-output{font-family:Arial,Helvetica,sans-serif!important;font-size:12px!important;font-weight:400;line-height:inherit}
