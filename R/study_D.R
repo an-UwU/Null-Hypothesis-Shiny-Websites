@@ -145,13 +145,10 @@ studyServer <- function(id, data, centre) {
       p_label <- function(p) if (p < .0001) "p < 0.0001" else paste0("p = ", fmt_p(p))
       chi <- if (is.null(r$chi)) shiny::p(r$chi_note) else {
         significant <- r$chi$p.value < .05
-        shiny::tagList(
-          shiny::p(sprintf(
-            "Fisher's exact test %s a statistically significant association between students' primary AI tool and their main academic purpose (%s).",
-            if (significant) "found" else "did not find", p_label(r$chi$p.value))),
-          shiny::p(if (significant)
-            "The distribution of tool choices differed across academic purposes in this selection."
-            else "The data did not provide enough evidence to conclude that tool choice differed across academic purposes."))
+        shiny::p(sprintf(
+          "We used Fisher's exact test to examine whether students' primary AI tool was associated with their main academic purpose. At the 5%% significance level, the results %s evidence of an association between tool choice and academic purpose (%s).",
+          if (significant) "provided sufficient" else "did not provide sufficient",
+          p_label(r$chi$p.value)))
       }
       logistic <- if (is.null(r$logistic)) shiny::p(r$logistic_note) else {
         significant <- r$logistic$p < .05
