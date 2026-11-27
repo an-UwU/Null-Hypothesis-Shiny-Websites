@@ -155,14 +155,14 @@ studyServer <- function(id, data, centre) {
       logistic <- if (is.null(r$logistic)) shiny::p(r$logistic_note) else {
         significant <- r$logistic$p < .05
         shiny::tagList(
+          shiny::p("We used a logistic regression model to examine whether students who spent more time using AI were more or less likely to intend to switch tools."),
           shiny::p(sprintf(
-            "The logistic regression model %s statistical significance at the 5%% level (likelihood-ratio \u03c7\u00b2 = %.3f, df = %d, %s).",
-            if (significant) "reached" else "did not reach", r$logistic$statistic,
-            as.integer(r$logistic$df), p_label(r$logistic$p))),
-          shiny::p(if (significant)
-            sprintf("Higher weekly usage was associated with %s odds of intending to switch tools (odds ratio per additional hour = %.3f).",
-              if (r$logistic$odds_ratio > 1) "higher" else "lower", r$logistic$odds_ratio)
-            else "The data did not provide enough evidence that weekly AI usage hours were associated with the intention to switch tools."))
+            "At the 5%% significance level, the results %s evidence of an association between weekly AI usage hours and switching intention (likelihood-ratio \u03c7\u00b2 = %.3f, df = %d, %s).",
+            if (significant) "provided sufficient" else "did not provide sufficient",
+            r$logistic$statistic, as.integer(r$logistic$df), p_label(r$logistic$p))),
+          if (significant) shiny::p(sprintf(
+            "Higher weekly usage was associated with %s odds of intending to switch tools (odds ratio per additional hour = %.3f).",
+            if (r$logistic$odds_ratio > 1) "higher" else "lower", r$logistic$odds_ratio)))
       }
       shiny::div(class = "study-grid test-grid",
         shiny::div(class = "test-block", shiny::h4("AI Tool and Academic Purpose"),
