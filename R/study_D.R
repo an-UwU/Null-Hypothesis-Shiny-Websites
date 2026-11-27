@@ -18,7 +18,7 @@ studyUI <- function(id) {
       shiny::uiOutput(ns("results"))),
     shiny::div(class = "panel caveat-panel", shiny::h3("Study Limitations"),
       shiny::p("We used volunteer sampling, inviting students to take part through Piazza posts and in-person invitations. Students who were more interested in AI may have been more likely to respond, so the sample may underrepresent students who rarely use AI."),
-      shiny::p("Our survey did not collect students' programs, year of study, or assignment requirements. Coding-heavy courses may lead students to choose different tools and spend more time using AI than reading- or writing-heavy courses. Without this information, we could not assess whether course demands helped explain the patterns in tool choice and usage hours."),
+      shiny::p("We did not ask students about their programs, year of study, or course assignments. Students whose courses involve more coding may choose different AI tools and use them more often than students whose work mainly involves reading or writing. We therefore could not tell how much these differences in coursework contributed to the tool choices and usage hours we observed."),
       shiny::p("We also did not directly ask whether students used free or paid plans, how long they had used their main tool, or which other tools they used alongside it. Access to paid features, familiarity, and experience with alternatives could affect switching intentions, but our regression included only weekly usage hours. Future surveys should collect these details to assess their contribution."))
   )
 }
