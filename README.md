@@ -12,10 +12,11 @@ The survey contains 112 voluntary responses, including 110 AI users. Recruitment
 
 ## Features
 
-- Shared filters for primary AI tool, future tool choice, and weekly usage hours.
+- Filters for primary AI tool, future tool choice, and weekly usage hours; the Overview page supports selecting multiple tools.
 - Three charts with selectable colour palettes, including tool choices by academic purpose and a weekly-hours histogram.
 - Descriptive statistics, exploratory statistical results, and study limitations.
-- A searchable response table and aggregate-summary download.
+- A searchable response table showing all survey fields, with sorting, horizontal scrolling, and adjustable page length.
+- Chart titles that identify the selected AI tool.
 
 ## Analysis
 

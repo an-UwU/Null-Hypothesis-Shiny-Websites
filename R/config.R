@@ -1,5 +1,5 @@
 PROJECT <- list(
-  title = "STA304 Student AI Use Survey",
+  title = "AI, in the classroom.",
   subtitle = "Generative AI preferences and habits among STA304H5 students",
   team = "Null Hypothesis",
   term = "Fall 2026",
@@ -20,7 +20,8 @@ PALETTES <- list(
   `Colour-blind friendly` = c("#0072B2", "#E69F00", "#009E73", "#CC79A7", "#56B4E9", "#999999")
 )
 
-# The stacked chart uses the tool colours. The histogram shows one distribution.
+# The overview uses the primary colour, and the stacked chart uses the tool colours.
+DEFAULT_FIGURE_PALETTE <- "Navy"
 FIGURE_PALETTES <- list(
   Navy = c("ChatGPT" = "#1B3B67", "Claude" = "#4C84B8", "Gemini" = "#91B8D8",
     "Other AI" = "#D6E5F2", histogram = "#284F83"),

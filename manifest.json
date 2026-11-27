@@ -1512,34 +1512,34 @@
   },
   "files": {
     "app.R": {
-      "checksum": "1150b80b3d0255313cc3a97f3095b13a"
+      "checksum": "a83760418b74a5893585bdb6c91766f6"
     },
     "data/survey.csv": {
-      "checksum": "cc4008e5f4ca631c03bfdab548f41d1f"
+      "checksum": "a22834f5683cd819259bd3e9175edc55"
     },
     "R/config.R": {
-      "checksum": "898be7a6350f5415658ac120175d5480"
+      "checksum": "6884ec30f565ba7bba1134071dacd243"
     },
     "R/filters_E.R": {
-      "checksum": "e2665023c53195e98fed174646d017ff"
+      "checksum": "c3fc4d0ae8115d745e63f796fe80b31d"
     },
     "R/helpers.R": {
-      "checksum": "04ca1f8d31608cd84125848edd8e9f3d"
+      "checksum": "7e7639cd047d2a8ae96608d9864e98a0"
     },
     "R/study_D.R": {
       "checksum": "1bedfe84a20753c7b009b79f1a8bc300"
     },
     "R/tools_B.R": {
-      "checksum": "dd5cc5441cbcc4faca957303c826f7c1"
+      "checksum": "ec990c32e4df688691d8b309db735398"
     },
     "R/usage_C.R": {
-      "checksum": "f621cf0af092e556133aa74322c94c15"
+      "checksum": "d06c9ce42748bab13e31712256efa8a7"
     },
     "www/favicon.svg": {
       "checksum": "67c006205a66e99cdbf409bc8910a294"
     },
     "www/styles.css": {
-      "checksum": "7ac1a3a14d18de3dcd9d2e08298df77f"
+      "checksum": "56052099609ffb39c9e1f83ee9e65a4d"
     }
   },
   "users": null

@@ -66,12 +66,12 @@ wrap_label <- function(x, width = 30) {
 }
 
 chart_theme <- function() {
-  ggplot2::theme_minimal(base_size = 13, base_family = "Arial") +
+  ggplot2::theme_minimal(base_size = 13, base_family = "sans") +
     ggplot2::theme(
-      axis.text = ggplot2::element_text(colour = "#485B73"),
       panel.grid.major.y = ggplot2::element_blank(),
       panel.grid.minor = ggplot2::element_blank(),
       panel.grid.major.x = ggplot2::element_line(colour = "#E5EDF6"),
+      axis.text = ggplot2::element_text(colour = "#485B73"),
       plot.title = ggplot2::element_text(face = "bold", colour = "#172840", size = 15),
       plot.subtitle = ggplot2::element_text(colour = "#53667D", margin = ggplot2::margin(b = 18)),
       legend.title = ggplot2::element_blank(), legend.position = "bottom",
@@ -80,8 +80,17 @@ chart_theme <- function() {
 }
 
 section_header <- function(kicker, title, description = NULL) {
+  if (identical(kicker, "04 / THE STUDY"))
+    return(shiny::div(class = "section-heading", shiny::h1(title)))
   shiny::div(class = "section-heading",
-    shiny::h1(title))
+    shiny::div(class = "eyebrow", kicker), shiny::h1(title),
+    if (!is.null(description)) shiny::p(description))
+}
+
+figure_title <- function(title, tool) {
+  if (is.null(tool) || identical(tool, "All")) return(title)
+  if (identical(tool, "No AI use")) return(paste(title, "for Respondents Who Reported No AI Use"))
+  paste(title, "for", tool, "Users")
 }
 
 metric_card <- function(label, value, detail, accent = FALSE) {
@@ -118,7 +127,8 @@ category_summary <- function(d, variable = "primary_tool") {
   out[order(-out$n, out$label), , drop = FALSE]
 }
 
-make_category_plot <- function(summary, measure = "percent", palette = "Navy", axis_max = NULL, colour = NULL) {
+make_category_plot <- function(summary, measure = "percent", palette = "Navy", axis_max = NULL,
+                               fill = PALETTES[[palette]][1]) {
   stopifnot(nrow(summary) > 0)
   s <- summary
   s$label <- factor(s$label, levels = rev(s$label))
@@ -126,8 +136,8 @@ make_category_plot <- function(summary, measure = "percent", palette = "Navy", a
   s$mark <- if (measure == "percent") sprintf("%.1f%%", s$value) else as.character(s$n)
   if (is.null(axis_max)) axis_max <- if (measure == "percent") 100 else max(s$n) * 1.15
   ggplot2::ggplot(s, ggplot2::aes(value, label)) +
-    ggplot2::geom_col(fill = if (is.null(colour)) PALETTES[[palette]][1] else colour, width = .54) +
-    ggplot2::geom_text(ggplot2::aes(label = mark), hjust = -.18, size = 4, family = "Arial", colour = "#17345A") +
+    ggplot2::geom_col(fill = fill, width = .54) +
+    ggplot2::geom_text(ggplot2::aes(label = mark), hjust = -.18, size = 4, colour = "#17345A") +
     ggplot2::scale_y_discrete(labels = function(x) wrap_label(x, 31)) +
     ggplot2::scale_x_continuous(expand = ggplot2::expansion(mult = c(0, .08))) +
     ggplot2::coord_cartesian(xlim = c(0, axis_max), clip = "on") +
