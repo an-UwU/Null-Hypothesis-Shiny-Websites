@@ -19,9 +19,9 @@ The survey contains 112 voluntary responses, including 110 AI users. Recruitment
 
 ## Analysis
 
-Tool choice and academic purpose are compared using a chi-square test with a conditional Monte Carlo p-value (100,000 simulations; seed 304). Switching intention is modelled using quadratic logistic regression with weekly hours and hours squared. Results update with the filters, with unavailable tests clearly identified.
+Tool choice and academic purpose are compared using Fisher's exact test. Switching intention is modelled using logistic regression with weekly usage hours as the predictor. Results update with the filters, with unavailable tests clearly identified.
 
-Skipped answers remain missing. The shared dataset excludes student identifiers. In the academic-purpose chart, Other AI combines DeepSeek and Yuanbao; the chi-square test retains the original categories.
+Skipped answers remain missing. The shared dataset excludes student identifiers. In the academic-purpose chart, Other AI combines DeepSeek and Yuanbao; Fisher's exact test retains the original categories.
 
 ## Run locally
 

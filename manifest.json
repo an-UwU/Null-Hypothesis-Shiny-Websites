@@ -1515,7 +1515,7 @@
       "checksum": "1150b80b3d0255313cc3a97f3095b13a"
     },
     "data/survey.csv": {
-      "checksum": "a22834f5683cd819259bd3e9175edc55"
+      "checksum": "cc4008e5f4ca631c03bfdab548f41d1f"
     },
     "R/config.R": {
       "checksum": "898be7a6350f5415658ac120175d5480"
@@ -1527,7 +1527,7 @@
       "checksum": "04ca1f8d31608cd84125848edd8e9f3d"
     },
     "R/study_D.R": {
-      "checksum": "6878fc8cce3c4bbcb35a673144ce1429"
+      "checksum": "65b74b9e0ee91881a572d1043b9550e4"
     },
     "R/tools_B.R": {
       "checksum": "dd5cc5441cbcc4faca957303c826f7c1"

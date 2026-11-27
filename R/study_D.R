@@ -8,18 +8,18 @@ studyUI <- function(id) {
         shiny::p("It includes 112 voluntary responses, of which 110 are from AI users. Participants were recruited through Piazza posts and in-person invitations, so the findings describe a self-selected sample and may not represent all STA304H5 students.")),
       shiny::div(class = "panel", shiny::h3("Survey Analysis"),
         shiny::p("We used descriptive statistics to summarize AI tool preferences, academic purposes, weekly usage hours, and switching intentions."),
-        shiny::p("A chi-square test examined the association between primary AI tool and academic purpose, while quadratic logistic regression assessed the relationship between weekly usage hours and the intention to switch tools. The chi-square test results are presented below in the Statistical Findings section."))),
+        shiny::p("Fisher's exact test examined the association between primary AI tool and academic purpose, while logistic regression assessed the relationship between weekly usage hours and the intention to switch tools. The test results are presented below in the Statistical Findings section."))),
     shiny::div(class = "panel", shiny::h3("Summary statistics"),
       shiny::p("Weekly AI use for coursework (hours), overall and by switching intention, in the current selection."),
       shiny::div(class = "study-table", shiny::tableOutput(ns("hours_table"))),
       shiny::uiOutput(ns("hours_reading"))),
     shiny::div(class = "panel",
       shiny::h3("Statistical Findings"),
-      shiny::uiOutput(ns("sample")),
       shiny::uiOutput(ns("results"))),
     shiny::div(class = "panel caveat-panel", shiny::h3("Study Limitations"),
-      shiny::p("The voluntary, non-probability sample may be affected by self-selection bias and may not represent all STA304H5 students. Usage hours, perceived benefits, and switching intentions were self-reported and may differ from actual behaviour or outcomes."),
-      shiny::p("Sparse tool-by-purpose counts and influential observations limit the strength of the statistical evidence. The quadratic model was selected during exploratory analysis, so its p-values do not account for model-selection uncertainty. Repeated subgroup testing may also increase the risk of false-positive findings. These observational results describe associations and cannot establish causation."))
+      shiny::p("We used volunteer sampling, inviting students to take part through Piazza posts and in-person invitations. Students who were more interested in AI may have been more likely to respond, so the sample may underrepresent students who rarely use AI."),
+      shiny::p("Our survey did not collect students' programs, year of study, or assignment requirements. Coding-heavy courses may lead students to choose different tools and spend more time using AI than reading- or writing-heavy courses. Without this information, we could not assess whether course demands helped explain the patterns in tool choice and usage hours."),
+      shiny::p("We also did not directly ask whether students used free or paid plans, how long they had used their main tool, or which other tools they used alongside it. Access to paid features, familiarity, and experience with alternatives could affect switching intentions, but our regression included only weekly usage hours. Future surveys should collect these details to assess their contribution."))
   )
 }
 
@@ -38,7 +38,7 @@ study_hours_summary <- function(d) {
   }))
 }
 
-# Preserve the existing analysis sample, formula, seed and simulation count.
+# Exact tool-purpose test and a single-predictor logistic model.
 compute_study <- function(d, centre) {
   a <- eligible_users(d)
   out <- list(n = nrow(a), chi = NULL, logistic = NULL,
@@ -52,20 +52,11 @@ compute_study <- function(d, centre) {
   if (nrow(tab) < 2L || ncol(tab) < 2L) {
     out$chi_note <- "Not reported: the test requires at least two AI tools and two academic purposes."
   } else {
-    # Restore RNG state so this calculation does not affect other modules.
-    had_seed <- exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE)
-    if (had_seed) old_seed <- get(".Random.seed", envir = .GlobalEnv)
-    on.exit({
-      if (had_seed) assign(".Random.seed", old_seed, envir = .GlobalEnv)
-      else if (exists(".Random.seed", envir = .GlobalEnv, inherits = FALSE))
-        rm(".Random.seed", envir = .GlobalEnv)
-    }, add = TRUE)
-    set.seed(304)
-    out["chi"] <- list(tryCatch(stats::chisq.test(tab, simulate.p.value = TRUE, B = 100000),
+    out["chi"] <- list(tryCatch(stats::fisher.test(tab, workspace = 20000000),
       error = function(e) NULL))
     if (is.null(out$chi) || !is.finite(out$chi$p.value)) {
       out["chi"] <- list(NULL)
-      out$chi_note <- "Not reported: the simulated test could not be computed for this selection."
+      out$chi_note <- "Not reported: Fisher's exact test could not be computed for this selection."
     }
   }
 
@@ -75,21 +66,16 @@ compute_study <- function(d, centre) {
     out$logistic_note <- "Not reported: this app requires 20 complete responses, five Stay and five Switch responses, and three distinct hour values to display the model."
     return(out)
   }
-  if (length(centre) != 1L || !is.finite(centre)) {
-    out$logistic_note <- "Not reported: the full-sample hours-centering value is unavailable."
-    return(out)
-  }
-  a$hours_centered <- a$weekly_ai_hours - centre
   out["logistic"] <- list(tryCatch({
     warned <- FALSE
     fitted <- withCallingHandlers({
       null <- stats::glm(intend_switch ~ 1, data = a, family = stats::binomial())
-      model <- stats::glm(intend_switch ~ hours_centered + I(hours_centered^2),
+      model <- stats::glm(intend_switch ~ weekly_ai_hours,
         data = a, family = stats::binomial())
       list(null = null, model = model)
     }, warning = function(w) { warned <<- TRUE; invokeRestart("muffleWarning") })
     model <- fitted$model
-    if (warned || !model$converged || model$rank < 3L ||
+    if (warned || !model$converged || model$rank < 2L ||
         any(!is.finite(stats::coef(summary(model)))) ||
         any(stats::fitted(model) < 1e-8 | stats::fitted(model) > 1 - 1e-8)) {
       NULL
@@ -97,7 +83,8 @@ compute_study <- function(d, centre) {
       comparison <- stats::anova(fitted$null, model, test = "Chisq")
       p <- comparison$`Pr(>Chi)`[2]
       if (!is.finite(p)) NULL else list(p = p, statistic = comparison$Deviance[2],
-        df = comparison$Df[2], n = nrow(a))
+        df = comparison$Df[2], n = nrow(a),
+        odds_ratio = exp(stats::coef(model)[["weekly_ai_hours"]]))
     }
   }, error = function(e) NULL))
   if (is.null(out$logistic))
@@ -153,8 +140,6 @@ studyServer <- function(id, data, centre) {
       }
       shiny::tagList(overall, comparison)
     })
-    output$sample <- shiny::renderUI(shiny::p(
-      sprintf("The following results are based on %d AI users with complete responses and update with the sidebar filters.", results()$n)))
     output$results <- shiny::renderUI({
       r <- results()
       p_label <- function(p) if (p < .0001) "p < 0.0001" else paste0("p = ", fmt_p(p))
@@ -162,25 +147,23 @@ studyServer <- function(id, data, centre) {
         significant <- r$chi$p.value < .05
         shiny::tagList(
           shiny::p(sprintf(
-            "The chi-square test %s a statistically significant association between students' primary AI tool and their main academic purpose (\u03c7\u00b2 = %.3f, Monte Carlo %s).",
-            if (significant) "found" else "did not find",
-            as.numeric(r$chi$statistic), p_label(r$chi$p.value))),
+            "Fisher's exact test %s a statistically significant association between students' primary AI tool and their main academic purpose (%s).",
+            if (significant) "found" else "did not find", p_label(r$chi$p.value))),
           shiny::p(if (significant)
-            "Tool choice and academic purpose were associated in this selection, but the test does not establish a causal relationship."
-            else if (as.numeric(r$chi$statistic) > 1e-10)
-              "Although tool preferences varied across purposes in the sample, the evidence was insufficient to conclude that tool choice and academic purpose were associated."
-            else "The evidence was insufficient to conclude that tool choice and academic purpose were associated; this does not prove independence."))
+            "The distribution of tool choices differed across academic purposes in this selection."
+            else "The data did not provide enough evidence to conclude that tool choice differed across academic purposes."))
       }
       logistic <- if (is.null(r$logistic)) shiny::p(r$logistic_note) else {
         significant <- r$logistic$p < .05
         shiny::tagList(
           shiny::p(sprintf(
-            "The quadratic logistic regression model %s statistical significance at the 5%% level (likelihood-ratio \u03c7\u00b2 = %.3f, df = %d, %s).",
+            "The logistic regression model %s statistical significance at the 5%% level (likelihood-ratio \u03c7\u00b2 = %.3f, df = %d, %s).",
             if (significant) "reached" else "did not reach", r$logistic$statistic,
             as.integer(r$logistic$df), p_label(r$logistic$p))),
           shiny::p(if (significant)
-            "Weekly usage hours provided exploratory evidence of an association with switching intention in this selection. This does not establish causation; the result should be interpreted cautiously because the model was selected during exploratory analysis."
-            else "The sample provided insufficient evidence of an association between weekly AI usage hours and switching intention. This does not establish that no relationship exists; the result should be interpreted cautiously because the model was selected during exploratory analysis."))
+            sprintf("Higher weekly usage was associated with %s odds of intending to switch tools (odds ratio per additional hour = %.3f).",
+              if (r$logistic$odds_ratio > 1) "higher" else "lower", r$logistic$odds_ratio)
+            else "The data did not provide enough evidence that weekly AI usage hours were associated with the intention to switch tools."))
       }
       shiny::div(class = "study-grid test-grid",
         shiny::div(class = "test-block", shiny::h4("AI Tool and Academic Purpose"),
